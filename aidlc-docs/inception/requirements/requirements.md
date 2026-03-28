@@ -1,130 +1,113 @@
-# Requirements Document -- AI Writing Detector
+# Requirements Document: Frontend UI/UX Redesign
 
 ## Intent Analysis
+- **User Request**: "Rework the frontend to be more beautiful. Same functionality but better UX/UI."
+- **Request Type**: Enhancement - visual/UX redesign of existing frontend
+- **Scope**: Multiple Components - all 6 frontend UI components + App shell + CSS
+- **Complexity**: Moderate - significant visual overhaul, no business logic changes, no API changes
 
-| Attribute | Value |
-|-----------|-------|
-| Request Type | New Project (Greenfield) |
-| Request Clarity | Clear -- detailed spec provided |
-| Scope | System-wide (full-stack monorepo) |
-| Complexity | Moderate |
-| Requirements Depth | Standard |
-
-**User Request**: Build a rule-based web application that accepts text input and analyzes it across multiple linguistic dimensions to estimate the probability that it was written by an AI. The system produces a 0-100 score with a detailed breakdown report. Implements Coding Challenge #113 (Steps 0-8).
+## Design Direction Summary
+- **Aesthetic**: Editorial / Magazine - bold typography, generous whitespace, asymmetric layouts, strong editorial hierarchy
+- **Theme**: Adaptive (dark + light modes)
+- **Typography**: Maximum readability via Google Fonts - distinctive display font paired with refined body font
+- **Motion**: Rich animations - orchestrated page loads, staggered reveals, animated gauge, scroll-triggered effects, hover states
+- **Gauge**: SVG arc gauge with smooth animated fill and gradient color transitions
+- **Layout**: Single-scroll narrative - continuous flow telling the "story" of the analysis
+- **Fonts**: External Google Fonts allowed
 
 ---
 
 ## Functional Requirements
 
-### FR-01: Text Analysis API
-- Single endpoint: `POST /api/analyze`
-- Accepts JSON body with a `text` field (required, non-empty string)
-- Returns structured JSON response with score, classification, stats, linguistic factors, pattern detections, and timestamp
-- Returns 422 for empty or missing text
+### FR-01: Preserve All Existing Functionality
+All current features must remain fully functional:
+- Text input with real-time character/word counting
+- Analyze button with disabled state when text is empty
+- API call to POST /api/analyze
+- Loading state during analysis
+- Error display on failure
+- Full report display: score, classification, stats, linguistic factors, pattern detections, warnings, timestamp
+- "Analyze Another" reset functionality
 
-### FR-02: Text Preprocessing
-- Sentence tokenization via **nltk.sent_tokenize**
-- Word tokenization
-- Basic statistics: character count, word count, sentence count, average word length
-- All detectors/analyzers receive original text plus pre-tokenized sentences and words
+### FR-02: Adaptive Theme (Dark + Light Mode)
+- System must detect user's OS color scheme preference
+- Provide toggle for manual dark/light switching
+- All components must render correctly in both modes
+- Theme preference should persist (localStorage)
+- Smooth transition between modes
 
-### FR-03: Pattern Detectors (Steps 2-5)
-Each detector implements a common abstract base (`BaseDetector`) with `detect()` and `score()` methods. Scores are subject to per-detector weight and cap from YAML config.
+### FR-03: SVG Arc Gauge
+- Replace current CSS needle gauge with SVG-based arc gauge
+- Smooth animated fill that transitions based on score (0-100)
+- Gradient color transitions: green (low) -> yellow (mid) -> red (high)
+- Score number prominently displayed in center
+- Animation on initial render (progressive fill from 0 to score value)
 
-| Detector | Step | What It Detects |
-|----------|------|-----------------|
-| Vocabulary | 2 | AI-characteristic words and phrases (delve, navigate, robust, etc.) |
-| Structural | 3 | Rule-of-three, negative parallelism, outline conclusions, false range |
-| Vague Language | 4 | Vague attributions, superficial hedging, overgeneralisations |
-| Emphasis | 5 | Undue superlatives, promotional language, elegant variation |
+### FR-04: Rich Animations
+- Staggered entrance animations on page/view transitions
+- Score gauge animated fill on report load
+- Section-by-section reveal as user scrolls or as data loads
+- Hover states on interactive elements (buttons, cards)
+- Smooth view transitions between input -> loading -> report
+- Loading state: engaging animation beyond a simple spinner
 
-### FR-04: Linguistic Analyzers (Step 6)
-Statistical analyzers that contribute to the overall score:
+### FR-05: Single-Scroll Narrative Layout
+- Report flows as a continuous story: score hero -> classification -> stats -> linguistic factors -> patterns -> reset
+- Generous whitespace between sections
+- Clear visual hierarchy guiding the eye downward
+- No tabs or card grids -- one continuous editorial flow
 
-| Analyzer | Metric |
-|----------|--------|
-| Lexical Diversity | Type-token ratio |
-| Sentence Length Variation | Coefficient of variation |
-| Passive Voice | Passive voice ratio |
-| Transition Density | Transition word frequency |
-| Reading Grade | Flesch-Kincaid grade level |
-| Punctuation | Punctuation pattern analysis |
-| Rare Words | Rare word ratio (via **wordfreq** library) |
+### FR-06: Editorial Typography
+- Load distinctive fonts via Google Fonts
+- Display/heading font: bold, characterful, high-impact
+- Body font: high-legibility, refined, optimized for reading
+- Monospace accent font for data values and scores
+- Proper typographic scale with clear hierarchy
 
-### FR-05: Score Aggregation (Step 7)
-- Sum all detector/analyzer score contributions
-- Normalize proportionally to 100 if raw sum exceeds 100
-- Classify using thresholds from config:
-  - < 30: Likely Human-Written
-  - 30-59: Possibly AI-Generated
-  - >= 60: Likely AI-Generated
-
-### FR-06: Report Builder (Step 8)
-- Assemble full response object from all detector/analyzer outputs
-- Include stats, linguistic factors, pattern detections, score, classification
-- Add UTC timestamp
-
-### FR-07: Configuration
-- All wordlists, regex patterns, weights, caps, and thresholds in a single `detectors.yaml`
-- Loaded and validated at startup
-
-### FR-08: Frontend
-- Single-page React application (Vite, TypeScript, **Tailwind CSS**)
-- **Input state**: Large textarea with live character/word count, "Analyze" button (disabled when empty)
-- **Report state**: Color-coded score gauge (green < 30, yellow 30-59, red >= 60), classification badge, stats bar, linguistic factors cards, pattern detections table, timestamp
-- "Analyze Another" button returns to input state
-
-### FR-09: No Minimum Text Length
-- Any non-empty text is accepted for analysis
-- Short texts may produce less reliable statistical measures (this is acceptable)
+### FR-07: Theme Toggle UI
+- Accessible toggle control for dark/light mode
+- Positioned in the header area
+- Clear visual indication of current mode
 
 ---
 
 ## Non-Functional Requirements
 
-### NFR-01: Technology Stack
-| Layer | Technology |
-|-------|-----------|
-| Backend | Python 3.12+, FastAPI, Uvicorn |
-| Frontend | React (Vite), TypeScript, Tailwind CSS |
-| NLP | nltk (sentence tokenization), wordfreq (rare word frequency) |
-| Config | YAML (detectors.yaml) |
-| Testing | pytest, pytest-cov, React Testing Library |
-| Dependency Management | uv |
-| Containerization | Docker Compose |
+### NFR-01: Performance
+- Font loading must not block initial render (font-display: swap)
+- Animations must run at 60fps (use CSS transforms/opacity, avoid layout thrashing)
+- SVG gauge rendering must be performant
+- Total added bundle size from new dependencies should be minimal
 
-### NFR-02: Project Structure
-- Monorepo with `backend/` and `frontend/` directories
-- Structure as defined in spec.md Section 2
+### NFR-02: Accessibility
+- Maintain semantic HTML structure
+- All interactive elements must be keyboard accessible
+- Color contrast must meet WCAG AA in both themes
+- Animations should respect prefers-reduced-motion
+- Score gauge must have appropriate ARIA labels
 
-### NFR-03: Testing
-- Test corpus: minimum 2 AI-generated + 2 human-written essays in `tests/corpus/`
-- Per-detector unit tests: positive detection, negative detection, cap enforcement, weight application, edge cases
-- Aggregator tests: sum correctness, normalization, classification thresholds
-- Integration tests via FastAPI TestClient
-- Coverage target: >= 85% on `backend/app/`
+### NFR-03: Responsiveness
+- All layouts must work on mobile (320px+), tablet, and desktop
+- Typography must scale appropriately
+- SVG gauge must resize fluidly
+- Narrative layout must be readable on all screen sizes
 
-### NFR-04: Deployment
-- Docker Compose with containerized backend and frontend
-- Single `docker-compose.yml` at project root
+### NFR-04: Browser Compatibility
+- Must work in modern browsers (Chrome, Firefox, Safari, Edge - latest 2 versions)
+- CSS custom properties for theming
+- No reliance on bleeding-edge features without fallbacks
 
-### NFR-05: Security
-- Security extension rules are **not enforced** for this project (prototype/learning project)
-- Basic input validation via Pydantic on API endpoints
-
-### NFR-06: CORS
-- Backend must configure CORS to allow frontend requests during development
+### NFR-05: Code Quality
+- Maintain existing TypeScript strict mode
+- Keep component separation and single-responsibility pattern
+- Fix existing loading prop bug (hardcoded false)
+- No new external runtime dependencies beyond what's needed for animation (CSS preferred over JS libraries)
 
 ---
 
-## Decisions Log
-
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Sentence tokenizer | nltk.sent_tokenize | More accurate with abbreviations and edge cases |
-| Rare word frequency | wordfreq library | Avoids maintaining a bundled frequency file |
-| Frontend CSS | Tailwind CSS | Fast prototyping, utility-first |
-| Dependency management | uv | Fast resolver, modern toolchain |
-| Deployment | Docker Compose | Containerized dev/demo environment |
-| Minimum text length | No minimum | Analyze any non-empty input |
-| Security rules | Not enforced | Prototype/learning project |
+## Constraints
+- **No backend changes** - API contract and backend remain untouched
+- **No new routes** - single-page application stays single-page
+- **TypeScript interfaces unchanged** - types/report.ts stays the same
+- **Existing data-testid attributes preserved** - for any future testing compatibility
+- **No functional regressions** - every feature that works today must work after redesign

@@ -5,39 +5,59 @@ interface LinguisticFactorsProps {
 }
 
 function getBarColor(contribution: number): string {
-  if (contribution === 0) return 'bg-green-400';
-  if (contribution <= 3) return 'bg-yellow-400';
-  return 'bg-red-400';
+  if (contribution === 0) return 'bg-[var(--color-emerald)]';
+  if (contribution <= 3) return 'bg-[var(--color-amber)]';
+  return 'bg-[var(--color-vermillion)]';
 }
 
 export function LinguisticFactors({ factors }: LinguisticFactorsProps) {
   if (factors.length === 0) return null;
 
   return (
-    <section data-testid="linguistic-factors">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Linguistic Factors</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {factors.map((factor) => (
+    <div data-testid="linguistic-factors">
+      <div className="mb-5">
+        <h2 className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight
+                       text-[var(--color-ink)] dark:text-[var(--color-ink-inverse)]">
+          Linguistic Factors
+        </h2>
+        <div className="editorial-rule mt-2 w-12" />
+      </div>
+
+      <div className="space-y-4">
+        {factors.map((factor, index) => (
           <div
             key={factor.name}
-            className="p-4 bg-white border border-gray-200 rounded-lg"
+            className={`p-5 rounded-lg border transition-colors
+                       bg-[var(--color-card-light)] dark:bg-[var(--color-card-dark)]
+                       border-[var(--color-border-light)] dark:border-[var(--color-border-dark)]
+                       animate-fade-in-up stagger-${Math.min(index + 1, 8)}`}
           >
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-medium text-gray-700">{factor.name}</span>
-              <span className="text-sm font-mono text-gray-500">
+            <div className="flex items-baseline justify-between mb-3">
+              <span className="font-[family-name:var(--font-body)] font-semibold text-sm
+                             text-[var(--color-ink)] dark:text-[var(--color-ink-inverse)]">
+                {factor.name}
+              </span>
+              <span className="font-[family-name:var(--font-mono)] text-xs
+                             text-[var(--color-ink-muted)] dark:text-[var(--color-ink-inverse-muted)]">
                 +{factor.score_contribution}
               </span>
             </div>
-            <div className="w-full h-2 bg-gray-100 rounded-full mb-2">
+
+            <div className="w-full h-1 rounded-full mb-3
+                           bg-[var(--color-border-light)] dark:bg-[var(--color-border-dark)]">
               <div
-                className={`h-full rounded-full transition-all duration-500 ${getBarColor(factor.score_contribution)}`}
+                className={`h-full rounded-full transition-all duration-700 ease-out ${getBarColor(factor.score_contribution)}`}
                 style={{ width: `${Math.min(factor.value * 100, 100)}%` }}
               />
             </div>
-            <p className="text-sm text-gray-500">{factor.explanation}</p>
+
+            <p className="font-[family-name:var(--font-body)] text-sm leading-relaxed
+                         text-[var(--color-ink-muted)] dark:text-[var(--color-ink-inverse-muted)]">
+              {factor.explanation}
+            </p>
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

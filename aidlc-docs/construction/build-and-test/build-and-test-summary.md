@@ -1,77 +1,64 @@
 # Build and Test Summary
 
 ## Build Status
+- **Build Tool**: Vite 8.0.3 + TypeScript 5.9.3
+- **Build Status**: Success
+- **Build Artifacts**:
+  - `dist/index.html` (0.89 KB)
+  - `dist/assets/index-*.css` (25.26 KB / 5.54 KB gzip)
+  - `dist/assets/index-*.js` (207.56 KB / 63.64 KB gzip)
+- **Build Time**: 92ms
 
-| Component | Tool | Status |
-|-----------|------|--------|
-| Backend | uv sync | Success |
-| Frontend | npm run build | Success |
-| TypeScript | tsc --noEmit | Success (0 errors) |
-| Docker | docker-compose.yml | Ready (not built in CI) |
+## Lint Status
+- **ESLint**: 0 errors, 0 warnings
+- **TypeScript**: 0 compilation errors (strict mode)
 
 ## Test Execution Summary
 
 ### Unit Tests
-- **Total Tests**: 127
-- **Passed**: 127
-- **Failed**: 0
-- **Coverage**: 97% (target: 85%)
-- **Status**: PASS
+- **Total Tests**: 0 (no frontend tests existed prior to redesign)
+- **Status**: N/A -- unit test recommendations provided in unit-test-instructions.md
 
-### Coverage Breakdown
-
-| Module | Coverage |
-|--------|----------|
-| app/core/models.py | 100% |
-| app/preprocessing.py | 100% |
-| app/detectors/vocabulary.py | 100% |
-| app/detectors/structural.py | 100% |
-| app/detectors/vague_language.py | 100% |
-| app/detectors/emphasis.py | 100% |
-| app/detectors/base.py | 95% |
-| app/detectors/registry.py | 93% |
-| app/analyzers/linguistic.py | 99% |
-| app/analyzers/readability.py | 97% |
-| app/scoring/aggregator.py | 93% |
-| app/report/builder.py | 100% |
-| app/main.py | 100% |
-| app/api/routes.py | 81% |
-| app/core/config.py | 84% |
-| **TOTAL** | **97%** |
-
-### Integration Tests (Corpus-Based)
-- **AI Essay 01**: Score >= 60 -- PASS (classified "Likely AI-Generated")
-- **AI Essay 02**: Score >= 60 -- PASS (classified "Likely AI-Generated")
-- **Human Essay 01**: Score < 30 -- PASS (classified "Likely Human-Written")
-- **Human Essay 02**: Score < 30 -- PASS (classified "Likely Human-Written")
-- **Schema Validation**: PASS
-- **Error Handling (422)**: PASS
-- **Status**: PASS
+### Integration Tests
+- **Test Scenarios**: 4 manual scenarios documented
+  1. Full analysis flow (input -> loading -> report)
+  2. Theme switching (dark/light with persistence)
+  3. Error handling (backend unavailable)
+  4. Responsive layout (320px, 768px, 1280px)
+- **Status**: Manual verification required
 
 ### Performance Tests
-- **Status**: N/A (prototype project, no performance requirements defined)
+- **Status**: N/A -- no performance requirements beyond 60fps animations (CSS-only, browser-guaranteed)
+- **Bundle Size**: 63.64 KB JS gzip + 5.54 KB CSS gzip (well within budget)
+- **Font Loading**: Non-blocking (font-display: swap)
 
 ### Additional Tests
-- **Contract Tests**: N/A (single service)
-- **Security Tests**: N/A (security extensions disabled)
-- **E2E Tests**: Manual via Docker Compose (instructions provided)
+- **Contract Tests**: N/A (API contract unchanged -- types/report.ts untouched)
+- **Security Tests**: N/A (security extension disabled)
+- **E2E Tests**: N/A (no existing E2E framework)
+
+## Verification Checklist
+- [x] TypeScript compiles with 0 errors (strict mode)
+- [x] ESLint passes with 0 errors
+- [x] Vite production build succeeds
+- [x] All 14 data-testid attributes preserved
+- [x] No new npm runtime dependencies added
+- [x] API client (api/client.ts) unchanged
+- [x] Type definitions (types/report.ts) unchanged
+- [x] prefers-reduced-motion respected in CSS
+- [ ] Visual verification: dark/light themes (manual)
+- [ ] Visual verification: responsive layout (manual)
+- [ ] Visual verification: SVG arc gauge animation (manual)
+- [ ] Visual verification: staggered entrance animations (manual)
 
 ## Overall Status
+- **Build**: Success
+- **Lint**: Pass
+- **Automated Tests**: N/A (none existed)
+- **Manual Testing**: 4 scenarios documented, ready for execution
+- **Ready for Visual Review**: Yes
 
-| Category | Status |
-|----------|--------|
-| Build | Success |
-| All Tests | PASS (127/127) |
-| Coverage | 97% (exceeds 85% target) |
-| Ready for Operations | Yes (Operations phase is placeholder) |
-
-## Deliverables
-
-| Deliverable | Location |
-|-------------|----------|
-| Backend API | `backend/` |
-| Frontend SPA | `frontend/` |
-| Docker Compose | `docker-compose.yml` |
-| Test Suite | `backend/tests/` (127 tests) |
-| Test Corpus | `backend/tests/corpus/` (4 essays) |
-| Detector Config | `backend/config/detectors.yaml` |
+## Next Steps
+1. Run `npm run dev` to start the dev server
+2. Execute the 4 integration test scenarios manually
+3. Verify visual appearance matches editorial/magazine direction

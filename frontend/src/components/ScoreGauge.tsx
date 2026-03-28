@@ -2,50 +2,94 @@ interface ScoreGaugeProps {
   score: number;
 }
 
-function getScoreColor(score: number): string {
-  if (score < 30) return '#22c55e';   // green
-  if (score < 60) return '#eab308';   // yellow
-  return '#ef4444';                    // red
+const RADIUS = 80;
+const STROKE = 10;
+const CIRCUMFERENCE = Math.PI * RADIUS;
+
+function getScoreLabel(score: number): string {
+  if (score < 30) return 'Low';
+  if (score < 60) return 'Moderate';
+  return 'High';
 }
 
-function getScoreBg(score: number): string {
-  if (score < 30) return 'bg-green-50 border-green-200';
-  if (score < 60) return 'bg-yellow-50 border-yellow-200';
-  return 'bg-red-50 border-red-200';
+function getScoreColor(score: number): string {
+  if (score < 30) return 'var(--color-emerald)';
+  if (score < 60) return 'var(--color-amber)';
+  return 'var(--color-vermillion)';
 }
 
 export function ScoreGauge({ score }: ScoreGaugeProps) {
-  const color = getScoreColor(score);
-  const bgClasses = getScoreBg(score);
-  const rotation = (score / 100) * 180 - 90; // -90 to 90 degrees
+  const clampedScore = Math.max(0, Math.min(100, score));
+  const dashoffset = CIRCUMFERENCE - (clampedScore / 100) * CIRCUMFERENCE;
 
   return (
     <div
       data-testid="score-gauge"
-      className={`inline-flex flex-col items-center p-8 rounded-2xl border ${bgClasses}`}
+      className="flex flex-col items-center"
     >
-      <div className="relative w-48 h-24 overflow-hidden">
-        {/* Background arc */}
-        <div className="absolute inset-0 rounded-t-full border-8 border-gray-200 border-b-0" />
-        {/* Colored fill arc */}
-        <div
-          className="absolute bottom-0 left-1/2 w-1 h-24 origin-bottom transition-transform duration-700"
-          style={{
-            transform: `rotate(${rotation}deg)`,
-            backgroundColor: color,
-          }}
-        />
-        {/* Center cover */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-16 bg-inherit rounded-t-full" />
+      <div className="relative" style={{ width: 200, height: 120 }}>
+        <svg
+          viewBox="0 0 200 120"
+          width="200"
+          height="120"
+          className="overflow-visible"
+        >
+          <defs>
+            <linearGradient id="arc-gradient" gradientUnits="userSpaceOnUse" x1="20" y1="100" x2="180" y2="100">
+              <stop offset="0%" stopColor="var(--color-emerald)" />
+              <stop offset="50%" stopColor="var(--color-amber)" />
+              <stop offset="100%" stopColor="var(--color-vermillion)" />
+            </linearGradient>
+          </defs>
+
+          {/* Background track */}
+          <path
+            d={`M ${100 - RADIUS} 100 A ${RADIUS} ${RADIUS} 0 0 1 ${100 + RADIUS} 100`}
+            fill="none"
+            stroke="var(--color-border-light)"
+            strokeWidth={STROKE}
+            strokeLinecap="round"
+            className="dark:stroke-[var(--color-border-dark)]"
+          />
+
+          {/* Animated fill arc */}
+          <path
+            d={`M ${100 - RADIUS} 100 A ${RADIUS} ${RADIUS} 0 0 1 ${100 + RADIUS} 100`}
+            fill="none"
+            stroke="url(#arc-gradient)"
+            strokeWidth={STROKE}
+            strokeLinecap="round"
+            strokeDasharray={CIRCUMFERENCE}
+            strokeDashoffset={dashoffset}
+            className="arc-animated"
+            style={{
+              '--arc-circumference': CIRCUMFERENCE,
+              '--arc-target': dashoffset,
+            } as React.CSSProperties}
+          />
+        </svg>
+
+        {/* Score number */}
+        <div className="absolute inset-0 flex flex-col items-center justify-end pb-1">
+          <span
+            className="font-[family-name:var(--font-display)] text-6xl font-bold leading-none
+                       animate-fade-in stagger-4"
+            style={{ color: getScoreColor(clampedScore) }}
+            data-testid="score-value"
+          >
+            {clampedScore}
+          </span>
+        </div>
       </div>
-      <div
-        className="text-6xl font-bold -mt-4"
-        style={{ color }}
-        data-testid="score-value"
-      >
-        {score}
+
+      <div className="mt-1 flex flex-col items-center gap-1">
+        <span
+          className="font-[family-name:var(--font-mono)] text-xs tracking-wider uppercase
+                     text-[var(--color-ink-faint)] dark:text-[var(--color-ink-inverse-muted)]"
+        >
+          {getScoreLabel(clampedScore)} probability &middot; {clampedScore}/100
+        </span>
       </div>
-      <div className="text-sm text-gray-500 mt-1">out of 100</div>
     </div>
   );
 }

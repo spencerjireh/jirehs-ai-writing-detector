@@ -1,1 +1,191 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: "Playfair Display", "Georgia", serif;
+  --font-body: "Source Serif 4", "Georgia", serif;
+  --font-mono: "JetBrains Mono", "Menlo", monospace;
+
+  --color-surface-light: #FAF8F5;
+  --color-surface-dark: #111110;
+  --color-card-light: #FFFFFF;
+  --color-card-dark: #1C1C1A;
+  --color-border-light: #E5E0DA;
+  --color-border-dark: #2A2A27;
+
+  --color-ink: #1A1714;
+  --color-ink-muted: #6B645A;
+  --color-ink-faint: #A39E95;
+  --color-ink-inverse: #F0ECE6;
+  --color-ink-inverse-muted: #9B9690;
+
+  --color-vermillion: #C23A22;
+  --color-vermillion-soft: #F5DBD5;
+  --color-emerald: #1A7D4B;
+  --color-emerald-soft: #D4F0E0;
+  --color-amber: #B8860B;
+  --color-amber-soft: #FDF3D7;
+
+  --color-accent: #C23A22;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Base ────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-surface-light);
+  color: var(--color-ink);
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.dark body {
+  background-color: var(--color-surface-dark);
+  color: var(--color-ink-inverse);
+}
+
+::selection {
+  background-color: var(--color-vermillion);
+  color: white;
+}
+
+/* ── Grain Overlay ───────────────────────────── */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ── Keyframes ───────────────────────────────── */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes arc-fill {
+  from { stroke-dashoffset: var(--arc-circumference); }
+  to { stroke-dashoffset: var(--arc-target); }
+}
+
+@keyframes score-count {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes rule-expand {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* ── Animation Classes ───────────────────────── */
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s var(--ease-out-expo) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease both;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.5s var(--ease-out-expo) both;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 25%, currentColor 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.4s; }
+
+/* ── SVG Arc Gauge ───────────────────────────── */
+
+.arc-animated {
+  animation: arc-fill 1.5s var(--ease-out-expo) 0.3s both;
+}
+
+/* ── Reduced Motion ──────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Decorative Rule ─────────────────────────── */
+
+.editorial-rule {
+  height: 2px;
+  background: var(--color-ink);
+  transform-origin: left;
+  animation: rule-expand 0.8s var(--ease-out-expo) both;
+}
+
+.dark .editorial-rule {
+  background: var(--color-ink-inverse);
+}
+
+/* ── Loading Dots ────────────────────────────── */
+
+.loading-dot {
+  animation: pulse-soft 1.4s ease-in-out infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }

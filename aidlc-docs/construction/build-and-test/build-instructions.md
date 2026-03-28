@@ -1,33 +1,14 @@
 # Build Instructions
 
 ## Prerequisites
-- **Python**: 3.12+
-- **uv**: latest (https://docs.astral.sh/uv/)
-- **Node.js**: 22+
-- **npm**: 10+
-- **Docker** and **Docker Compose**: (optional, for containerized deployment)
+- **Build Tool**: Vite 8.0.3 with TypeScript 5.9.3
+- **Runtime**: Node.js 22+
+- **Package Manager**: npm
+- **Dependencies**: React 19, Tailwind CSS 4 (dev dependencies only)
+- **Environment Variables**: None required for frontend build
+- **External Requirements**: Internet access for Google Fonts loading at runtime
 
-## Backend Build
-
-### 1. Install Dependencies
-```bash
-cd backend
-uv sync --all-extras
-```
-
-### 2. Download NLTK Data
-```bash
-uv run python -c "import nltk; nltk.download('punkt_tab', quiet=True)"
-```
-
-### 3. Verify Backend Starts
-```bash
-uv run uvicorn app.main:app --port 8000
-# Expected: "Uvicorn running on http://0.0.0.0:8000"
-# Ctrl+C to stop
-```
-
-## Frontend Build
+## Build Steps
 
 ### 1. Install Dependencies
 ```bash
@@ -35,42 +16,48 @@ cd frontend
 npm install
 ```
 
-### 2. Build for Production
+### 2. Build All Units
 ```bash
 npm run build
 ```
-- **Expected Output**: `dist/` directory with `index.html`, CSS, and JS bundles
-- **Acceptable Warnings**: Vite may warn about chunk sizes; this is non-blocking
+This runs `tsc -b` (TypeScript compilation) followed by `vite build` (production bundling).
 
-### 3. Development Server
+### 3. Verify Build Success
+- **Expected Output**:
+  - `tsc -b` completes with 0 errors
+  - Vite reports 3 output files: `index.html`, CSS bundle, JS bundle
+  - Build completes in <200ms
+- **Build Artifacts**:
+  - `frontend/dist/index.html` (~0.89 KB)
+  - `frontend/dist/assets/index-*.css` (~25 KB, ~5.5 KB gzipped)
+  - `frontend/dist/assets/index-*.js` (~207 KB, ~63 KB gzipped)
+- **Common Warnings**: None expected
+
+### 4. Lint Check
 ```bash
-npm run dev
-# Expected: "Local: http://localhost:5173/"
-# API proxy forwards /api to localhost:8000
+npm run lint
 ```
+Should complete with 0 warnings, 0 errors.
 
-## Docker Build
-
-### 1. Build and Start All Services
+### 5. Preview Production Build
 ```bash
-docker compose up --build
+npm run preview
 ```
-- **Backend**: http://localhost:8000
-- **Frontend**: http://localhost:3000
-
-### 2. Stop Services
-```bash
-docker compose down
-```
+Opens production build at `http://localhost:4173`. Verify:
+- Fonts load correctly (Playfair Display, Source Serif 4, JetBrains Mono)
+- Page renders with editorial styling
+- No console errors
 
 ## Troubleshooting
 
-### uv not found
-- Install: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+### Fonts Not Loading
+- **Cause**: Google Fonts CDN blocked or offline
+- **Solution**: Fonts use `font-display: swap` so the UI renders with fallback serif/monospace fonts. Check network tab for blocked requests.
 
-### nltk punkt_tab download fails
-- Ensure internet connectivity
-- Alternatively: `uv run python -m nltk.downloader punkt_tab`
+### Build Fails with TypeScript Errors
+- **Cause**: Type mismatches or missing imports
+- **Solution**: Run `npx tsc --noEmit` for detailed error messages. All components use interfaces from `types/report.ts` which is unchanged.
 
-### Frontend proxy 502 errors
-- Ensure backend is running on port 8000 before starting frontend dev server
+### Tailwind Classes Not Applied
+- **Cause**: Tailwind v4 not processing CSS
+- **Solution**: Verify `@tailwindcss/vite` plugin is in `vite.config.ts` and `@import "tailwindcss"` is first line of `index.css`.
