@@ -1,0 +1,189 @@
+vocabulary:
+  weight: 1.0
+  cap: 15
+  words:
+    - delve
+    - navigate
+    - robust
+    - innovative
+    - transformative
+    - leverage
+    - streamline
+    - ecosystem
+    - synergy
+    - holistic
+    - paradigm
+    - nuanced
+    - multifaceted
+    - pivotal
+    - spearhead
+    - underscore
+    - foster
+    - facilitate
+    - encompass
+    - utilize
+  phrases:
+    - "delve into"
+    - "innovative solutions"
+    - "it's important to note"
+    - "it is worth noting"
+    - "in today's world"
+    - "in the realm of"
+    - "plays a crucial role"
+    - "a myriad of"
+    - "at the end of the day"
+    - "on the other hand"
+    - "in this article"
+    - "dive deep"
+    - "game-changing"
+    - "cutting-edge"
+    - "state-of-the-art"
+  points_per_match: 2
+
+structural:
+  rule_of_three:
+    weight: 1.0
+    cap: 10
+    points_per_match: 3
+  negative_parallelism:
+    weight: 1.0
+    cap: 8
+    patterns:
+      - "not only .{1,80} but also"
+    points_per_match: 4
+  outline_conclusion:
+    weight: 1.0
+    cap: 8
+    patterns:
+      - "(?i)despite .{1,60}, .{1,60} offers .{1,60}"
+      - "(?i)while .{1,60}, .{1,60} remains .{1,60}"
+      - "(?i)although .{1,60}, .{1,60} provides .{1,60}"
+    points_per_match: 5
+  false_range:
+    weight: 1.0
+    cap: 6
+    patterns:
+      - "from .{1,40} to .{1,40}"
+    points_per_match: 3
+
+vague_language:
+  attributions:
+    weight: 1.0
+    cap: 10
+    phrases:
+      - "experts agree"
+      - "studies show"
+      - "research indicates"
+      - "industry insiders"
+      - "according to experts"
+      - "many believe"
+      - "it is widely accepted"
+    points_per_match: 3
+  superficial:
+    weight: 1.0
+    cap: 8
+    phrases:
+      - "it is worth noting"
+      - "significant developments"
+      - "one could argue"
+      - "various sources indicate"
+      - "it goes without saying"
+      - "needless to say"
+      - "interestingly enough"
+    points_per_match: 2
+  overgeneralisation:
+    weight: 1.0
+    cap: 8
+    phrases:
+      - "everyone knows"
+      - "it is well established"
+      - "universal consensus"
+      - "throughout history"
+      - "since the dawn of time"
+      - "it is common knowledge"
+    points_per_match: 3
+
+emphasis:
+  undue:
+    weight: 1.0
+    cap: 10
+    words:
+      - tremendous
+      - remarkable
+      - groundbreaking
+      - extraordinary
+      - unprecedented
+      - exceptional
+      - phenomenal
+      - monumental
+    points_per_match: 2
+  promotional:
+    weight: 1.0
+    cap: 10
+    phrases:
+      - "game-changer"
+      - "revolutionary"
+      - "impressive features"
+      - "transformative potential"
+      - "industry-leading"
+      - "best-in-class"
+      - "world-class"
+    points_per_match: 3
+  elegant_variation:
+    weight: 1.0
+    cap: 8
+    synonym_groups:
+      - ["company", "organisation", "firm", "enterprise"]
+      - ["method", "approach", "technique", "strategy"]
+      - ["problem", "issue", "challenge", "obstacle"]
+      - ["important", "crucial", "vital", "essential"]
+    proximity_sentences: 4
+    points_per_match: 3
+
+linguistic:
+  lexical_diversity:
+    weight: 1.0
+    cap: 8
+    low_threshold: 0.4
+    high_threshold: 0.8
+  sentence_length_variation:
+    weight: 1.0
+    cap: 10
+    cv_threshold: 0.35
+  passive_voice:
+    weight: 1.0
+    cap: 8
+    human_range: [0.05, 0.10]
+    ai_threshold: 0.15
+  transition_density:
+    weight: 1.0
+    cap: 8
+    ai_threshold: 0.20
+    words:
+      - furthermore
+      - moreover
+      - consequently
+      - additionally
+      - nevertheless
+      - subsequently
+      - accordingly
+      - therefore
+      - hence
+      - thus
+  reading_grade:
+    weight: 1.0
+    cap: 6
+    ai_threshold: 14
+  punctuation:
+    weight: 1.0
+    cap: 6
+  rare_words:
+    weight: 1.0
+    cap: 6
+    ai_threshold: 0.12
+    human_range: [0.03, 0.08]
+
+scoring:
+  classification:
+    likely_human: 30
+    possibly_ai: 60
