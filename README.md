@@ -6,27 +6,27 @@ A rule-based AI writing detection tool that analyzes text using linguistic patte
 
 ## Tech Stack
 
-**Backend** -- Python 3.12, FastAPI, Pydantic, NLTK, wordfreq
+**Backend**: Python 3.12, FastAPI, Pydantic, NLTK, wordfreq
 
-**Frontend** -- React 19, TypeScript, Vite, Tailwind CSS 4
+**Frontend**: React 19, TypeScript, Vite, Tailwind CSS 4
 
-**Infrastructure** -- Docker, Docker Compose, Nginx
+**Infrastructure**: Docker, Docker Compose, Nginx
 
 ## How Detection Works
 
-The detector uses a multi-stage analysis pipeline with no machine learning -- it relies entirely on rule-based pattern matching and statistical linguistics.
+The detector uses a multi-stage analysis pipeline with no machine learning. It relies entirely on rule-based pattern matching and statistical linguistics.
 
 ### Analysis Pipeline
 
-1. **Preprocessing** -- Sentence tokenization (NLTK), word extraction, basic stats (word count, sentence count, avg word length)
+1. **Preprocessing**: Sentence tokenization (NLTK), word extraction, basic stats (word count, sentence count, avg word length)
 
-2. **Pattern Detection** -- Four independent detectors scan for AI-characteristic patterns:
-   - **Vocabulary** -- Flags AI-typical words and phrases ("delve", "robust", "innovative solutions", "it is worth noting")
-   - **Structural** -- Detects rule-of-three constructions, negative parallelism, outline-conclusion patterns
-   - **Vague Language** -- Identifies empty attributions ("studies show"), superficial hedging, overgeneralizations
-   - **Emphasis** -- Finds undue emphasis ("unprecedented"), promotional language, elegant variation
+2. **Pattern Detection**: Four independent detectors scan for AI-characteristic patterns:
+   - **Vocabulary**: Flags AI-typical words and phrases ("delve", "robust", "innovative solutions", "it is worth noting")
+   - **Structural**: Detects rule-of-three constructions, negative parallelism, outline-conclusion patterns
+   - **Vague Language**: Identifies empty attributions ("studies show"), superficial hedging, overgeneralizations
+   - **Emphasis**: Finds undue emphasis ("unprecedented"), promotional language, elegant variation
 
-3. **Linguistic Analysis** -- Seven statistical measurements:
+3. **Linguistic Analysis**: Seven statistical measurements:
    - Lexical diversity (type-token ratio)
    - Sentence length variation (coefficient of variation)
    - Passive voice ratio
@@ -35,12 +35,12 @@ The detector uses a multi-stage analysis pipeline with no machine learning -- it
    - Rare word ratio (via wordfreq)
    - Reading grade level (Flesch-Kincaid)
 
-4. **Score Aggregation** -- Each detector and linguistic factor contributes points weighted by configurable multipliers and caps. If the total exceeds 100, contributions are proportionally scaled down.
+4. **Score Aggregation**: Each detector and linguistic factor contributes points weighted by configurable multipliers and caps. If the total exceeds 100, contributions are proportionally scaled down.
 
-5. **Classification** -- The final score maps to a label:
-   - `< 30` -- Likely Human-Written
-   - `30-59` -- Possibly AI-Generated
-   - `>= 60` -- Likely AI-Generated
+5. **Classification**: The final score maps to a label:
+   - `< 30`: Likely Human-Written
+   - `30-59`: Possibly AI-Generated
+   - `>= 60`: Likely AI-Generated
 
 All thresholds, word lists, and weights are configurable via `backend/config/detectors.yaml`.
 
