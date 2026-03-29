@@ -114,6 +114,13 @@ uv run pytest --cov=app --cov-report=html  # with coverage
 }
 ```
 
+## Roadmap
+
+- [ ] Integrate ML-based classification (fine-tuned transformer models) alongside the existing rule-based pipeline
+- [ ] Ground detection heuristics in published research on AI-generated text identification
+- [ ] Performance optimizations for large documents (streaming analysis, caching, batch processing)
+- [ ] Support for multiple languages beyond English
+
 ## License
 
 [MIT](LICENSE)
