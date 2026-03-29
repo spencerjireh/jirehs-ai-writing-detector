@@ -9,10 +9,12 @@ type View = 'input' | 'loading' | 'report';
 
 export default function App() {
   const [view, setView] = useState<View>('input');
+  const [text, setText] = useState('');
   const [report, setReport] = useState<AnalyzeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [reanalyzing, setReanalyzing] = useState(false);
 
-  async function handleAnalyze(text: string) {
+  async function handleAnalyze() {
     setError(null);
     setView('loading');
     try {
@@ -25,14 +27,28 @@ export default function App() {
     }
   }
 
+  async function handleReAnalyze() {
+    setError(null);
+    setReanalyzing(true);
+    try {
+      const result = await analyzeText(text);
+      setReport(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Analysis failed');
+    } finally {
+      setReanalyzing(false);
+    }
+  }
+
   function handleReset() {
     setReport(null);
+    setText('');
     setView('input');
   }
 
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-6 transition-colors duration-400">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-10 transition-colors duration-400">
+      <div className="w-full max-w-7xl mx-auto">
         {/* Header */}
         <header className="flex items-start justify-between mb-12 animate-fade-in-up">
           <div>
@@ -69,8 +85,8 @@ export default function App() {
 
         {/* Input View */}
         {view === 'input' && (
-          <div className="animate-fade-in-up stagger-3">
-            <TextInput onAnalyze={handleAnalyze} loading={false} />
+          <div className="max-w-2xl animate-fade-in-up stagger-3">
+            <TextInput text={text} onTextChange={setText} onAnalyze={handleAnalyze} loading={false} />
           </div>
         )}
 
@@ -94,7 +110,14 @@ export default function App() {
         {/* Report View */}
         {view === 'report' && report && (
           <div className="animate-fade-in-up">
-            <ReportView report={report} onReset={handleReset} />
+            <ReportView
+              report={report}
+              text={text}
+              onTextChange={setText}
+              onReAnalyze={handleReAnalyze}
+              reanalyzing={reanalyzing}
+              onReset={handleReset}
+            />
           </div>
         )}
       </div>

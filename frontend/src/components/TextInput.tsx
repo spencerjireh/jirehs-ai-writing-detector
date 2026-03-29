@@ -1,13 +1,11 @@
-import { useState } from 'react';
-
 interface TextInputProps {
-  onAnalyze: (text: string) => void;
+  text: string;
+  onTextChange: (text: string) => void;
+  onAnalyze: () => void;
   loading: boolean;
 }
 
-export function TextInput({ onAnalyze, loading }: TextInputProps) {
-  const [text, setText] = useState('');
-
+export function TextInput({ text, onTextChange, onAnalyze, loading }: TextInputProps) {
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
   const charCount = text.length;
 
@@ -16,7 +14,7 @@ export function TextInput({ onAnalyze, loading }: TextInputProps) {
       <textarea
         data-testid="text-input"
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => onTextChange(e.target.value)}
         placeholder="Paste or type text to analyze..."
         className="w-full h-72 p-6 rounded-lg border transition-all duration-300
                    font-[family-name:var(--font-body)] text-base leading-relaxed
@@ -37,7 +35,7 @@ export function TextInput({ onAnalyze, loading }: TextInputProps) {
         </div>
         <button
           data-testid="analyze-button"
-          onClick={() => onAnalyze(text)}
+          onClick={onAnalyze}
           disabled={text.trim().length === 0 || loading}
           className="px-8 py-3 font-[family-name:var(--font-display)] font-semibold text-sm tracking-wide uppercase
                      rounded-lg transition-all duration-300
